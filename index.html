@@ -26,14 +26,11 @@
       <span class="switch" aria-hidden="true"></span>
       <span class="easy-state">Off</span>
     </label>
-    <button type="button" class="btn" id="open-notebook" aria-controls="notebook" aria-expanded="false">
-      Detective’s notebook <span class="badge" id="nb-count" hidden>0</span>
-    </button>
   </div>
 </header>
 
 <main id="main" class="wrap">
-  <p class="hint" id="book-hint">Turn the pages with the arrows, the keys, or a swipe. Tap a red mark to read Mrs Hayes’s question. Tap a line to mark it as evidence.</p>
+  <p class="hint" id="book-hint">Turn the pages. Tap a red mark if you want to answer Mrs Hayes.</p>
 
   <section class="book-frame" id="book" aria-label="Nell’s exercise book">
     <button type="button" class="page-btn prev" id="prev" aria-label="Previous page">‹</button>
@@ -49,31 +46,6 @@
     <div class="teacher-true-body" id="teacher-body"></div>
   </details>
 </main>
-
-<aside id="notebook" class="notebook-panel" hidden role="dialog" aria-labelledby="nb-title">
-  <div class="notebook-inner">
-    <header class="nb-head">
-      <h2 id="nb-title">Detective’s notebook</h2>
-      <button type="button" class="btn quiet" id="close-notebook">Close</button>
-    </header>
-    <p class="note">Your answers and the lines you mark are saved on this device only. Nothing is sent away.</p>
-    <div class="nb-actions">
-      <button type="button" class="btn" id="print-notebook">Print</button>
-      <button type="button" class="btn alt" id="copy-notebook">Copy</button>
-      <button type="button" class="btn quiet" id="clear-notebook">Clear my notes</button>
-    </div>
-    <div class="nb-scroll">
-    <section>
-      <h3>Mrs Hayes’s questions</h3>
-      <div id="nb-answers"></div>
-    </section>
-    <section>
-      <h3>Evidence I’ve marked</h3>
-      <div id="nb-evidence"></div>
-    </section>
-    </div>
-  </div>
-</aside>
 
 <dialog id="hayes-dialog" class="pop" aria-labelledby="hayes-title">
   <h2 id="hayes-title" class="teacher-hand"></h2>
@@ -92,22 +64,6 @@
   <p>Mrs Hayes wrote <q id="spell-right" class="fix"></q>.</p>
   <div class="pop-actions">
     <button type="button" class="btn" id="spell-close">Close</button>
-  </div>
-</dialog>
-
-<dialog id="evidence-dialog" class="pop" aria-labelledby="ev-title">
-  <h2 id="ev-title">Mark this line as evidence</h2>
-  <blockquote class="ev-quote" id="ev-quote"></blockquote>
-  <fieldset class="ev-tags">
-    <legend>How should this be marked?</legend>
-    <label><input type="radio" name="ev-tag" value="seen"> Seen it myself</label>
-    <label><input type="radio" name="ev-tag" value="heard"> Heard it</label>
-    <label><input type="radio" name="ev-tag" value="unsure"> Not sure</label>
-  </fieldset>
-  <div class="pop-actions">
-    <button type="button" class="btn" id="ev-save">Save</button>
-    <button type="button" class="btn quiet" id="ev-remove">Remove mark</button>
-    <button type="button" class="btn quiet" id="ev-close">Close</button>
   </div>
 </dialog>
 

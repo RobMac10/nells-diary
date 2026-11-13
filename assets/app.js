@@ -6,12 +6,10 @@
   if (!D) return;
 
   const STORE = "nells-diary-app-v1";
-  const TAGS = { seen: "Seen it myself", heard: "Heard it", unsure: "Not sure" };
   const $ = (id) => document.getElementById(id);
 
-  const state = { page: 0, easy: false, answers: {}, evidence: {} };
+  const state = { page: 0, easy: false, answers: {}, finding: "", reason: "" };
   let flipping = false;
-  let evPid = null;
   let noteId = null;
   let swipeX = null;
   let swipeY = null;
@@ -43,7 +41,8 @@
       if (data && typeof data === "object") {
         state.easy = !!data.easy;
         state.answers = data.answers && typeof data.answers === "object" ? data.answers : {};
-        state.evidence = data.evidence && typeof data.evidence === "object" ? data.evidence : {};
+        state.finding = typeof data.finding === "string" ? data.finding : "";
+        state.reason = typeof data.reason === "string" ? data.reason : "";
       }
     } catch (err) {
       /* storage may be blocked; the book still works */
@@ -53,7 +52,7 @@
     try {
       localStorage.setItem(
         STORE,
-        JSON.stringify({ easy: state.easy, answers: state.answers, evidence: state.evidence })
+        JSON.stringify({ easy: state.easy, answers: state.answers, finding: state.finding, reason: state.reason })
       );
     } catch (err) { /* ignore quota / private mode */ }
   }
@@ -162,28 +161,36 @@
     }
     for (let i = page.from; i <= page.to; i++) {
       const para = e.paras[i];
-      const tag = state.evidence[para.id] || "";
       const last = page.last && i === page.to;
-      html += '<div class="line"' + (tag ? ' data-tag="' + tag + '"' : "") + ">";
+      html += '<div class="line">';
       html += '<div class="margin">';
       if (para.note) {
         html +=
           '<button type="button" class="hayes-mark" data-note="' + para.note.id +
           '" aria-haspopup="dialog" aria-label="Mrs Hayes wrote a note. Open it.">AH</button>';
       }
-      html +=
-        '<button type="button" class="ev-mark" data-para="' + para.id +
-        (tag ? '" data-tag="' + tag : "") +
-        '" aria-haspopup="dialog" aria-label="Mark this line as evidence"></button>';
       html += "</div>";
       html += "<p" + (last ? ' class="breakoff"' : "") + ">" + renderRuns(para.runs);
       if (last) html += ' <span class="smudge" role="img" aria-label="An ink smudge where the writing breaks off."></span>';
       html += "</p></div>";
     }
     if (page.last) {
+      var rebels = state.finding === "rebels" ? " checked" : "";
+      var soldiers = state.finding === "soldiers" ? " checked" : "";
+      var unknown = state.finding === "cant-know" ? " checked" : "";
       html +=
-        '<div class="end-wrap">' +
+        '<div class="end-wrap finding-box">' +
           '<p class="endline">' + escapeHtml(D.end) + "</p>" +
+          "<h3>My finding</h3>" +
+          "<p>Who fired first?</p>" +
+          '<fieldset class="find-choice">' +
+            '<legend class="visually-hidden">Who fired first?</legend>' +
+            '<label class="choice"><input type="radio" name="who-first" value="rebels"' + rebels + "> Rebels</label>" +
+            '<label class="choice"><input type="radio" name="who-first" value="soldiers"' + soldiers + "> Soldiers</label>" +
+            '<label class="choice"><input type="radio" name="who-first" value="cant-know"' + unknown + "> We can’t know</label>" +
+          "</fieldset>" +
+          '<label class="field" for="finding-reason">My reason:</label>' +
+          '<textarea id="finding-reason" rows="5" maxlength="4000">' + escapeHtml(state.reason) + "</textarea>" +
           '<p><a class="cta" href="' + escapeHtml(D.caseUrl) + '">' + escapeHtml(D.cta) + "</a></p>" +
         "</div>";
     }
@@ -241,8 +248,12 @@
         openSpell(btn.getAttribute("data-wrong"), btn.getAttribute("data-right"));
       });
     });
-    root.querySelectorAll(".ev-mark").forEach(function (btn) {
-      btn.addEventListener("click", function () { openEvidence(btn.getAttribute("data-para")); });
+    var reason = root.querySelector("#finding-reason");
+    if (reason) {
+      reason.addEventListener("input", function () { state.reason = reason.value; save(); });
+    }
+    root.querySelectorAll('input[name="who-first"]').forEach(function (r) {
+      r.addEventListener("change", function () { state.finding = r.value; save(); });
     });
   }
 
@@ -255,11 +266,6 @@
     else status.textContent = "Pages " + (start + 1) + "–" + (end + 1) + " of " + total;
     $("prev").disabled = start <= 0;
     $("next").disabled = end >= maxPage();
-    const n = Object.keys(state.answers).filter(function (k) { return (state.answers[k] || "").trim(); }).length
-      + Object.keys(state.evidence).length;
-    const badge = $("nb-count");
-    badge.hidden = n === 0;
-    badge.textContent = String(n);
     applyEasy();
   }
 
@@ -302,7 +308,7 @@
     flipTo(spreadStart(state.page) + dir * step, dir);
   }
 
-  /* Notes, spellings, evidence */
+  /* Notes and spellings */
   function openNote(id) {
     const n = noteById(id);
     if (!n) return;
@@ -323,7 +329,6 @@
     else delete state.answers[noteId];
     save();
     updateChrome();
-    renderNotebook();
     closeNote();
   }
   function openSpell(wrong, right) {
@@ -332,142 +337,6 @@
     $("spell-dialog").showModal();
     $("spell-close").focus();
   }
-  function openEvidence(pid) {
-    const found = paraById(pid);
-    if (!found) return;
-    evPid = pid;
-    $("ev-quote").textContent = plainRuns(found.para.runs);
-    const current = state.evidence[pid] || "";
-    document.querySelectorAll('input[name="ev-tag"]').forEach(function (r) {
-      r.checked = r.value === current;
-    });
-    $("evidence-dialog").showModal();
-  }
-  function saveEvidence() {
-    if (!evPid) return;
-    const picked = document.querySelector('input[name="ev-tag"]:checked');
-    if (picked) state.evidence[evPid] = picked.value;
-    save();
-    $("evidence-dialog").close();
-    evPid = null;
-    renderSpread();
-    renderNotebook();
-  }
-  function removeEvidence() {
-    if (!evPid) return;
-    delete state.evidence[evPid];
-    save();
-    $("evidence-dialog").close();
-    evPid = null;
-    renderSpread();
-    renderNotebook();
-  }
-
-  /* Detective's notebook */
-  function notebookOpen() { return !$("notebook").hidden; }
-  function setNotebook(open) {
-    $("notebook").hidden = !open;
-    $("open-notebook").setAttribute("aria-expanded", open ? "true" : "false");
-    document.body.classList.toggle("notebook-open", open);
-    if (open) {
-      renderNotebook();
-      $("close-notebook").focus();
-    }
-  }
-  function renderNotebook() {
-    const answers = $("nb-answers");
-    answers.innerHTML = D.notes.map(function (n) {
-      const ans = state.answers[n.id];
-      return (
-        '<article class="nb-card">' +
-          '<p class="meta">' + escapeHtml(n.date) + "</p>" +
-          '<p class="q">' + escapeHtml(n.text) + "</p>" +
-          (ans
-            ? '<p class="ans">' + escapeHtml(ans) + "</p>"
-            : '<p class="empty">Not yet answered.</p>') +
-        "</article>"
-      );
-    }).join("");
-    const ev = $("nb-evidence");
-    const items = Object.keys(state.evidence);
-    if (!items.length) {
-      ev.innerHTML = '<p class="empty">No lines marked yet. Use the mark beside a line: Seen it myself, Heard it, or Not sure.</p>';
-      return;
-    }
-    ev.innerHTML = items.map(function (pid) {
-      const found = paraById(pid);
-      if (!found) return "";
-      const tag = state.evidence[pid];
-      return (
-        '<article class="nb-card">' +
-          '<p class="meta">' + escapeHtml(found.entry.date) + "</p>" +
-          '<p class="ans">' + escapeHtml(plainRuns(found.para.runs)) + "</p>" +
-          '<p><span class="tag ' + tag + '">' + escapeHtml(TAGS[tag] || tag) + "</span></p>" +
-        "</article>"
-      );
-    }).join("");
-  }
-  function notebookText() {
-    const lines = ["Detective’s notebook — Nell’s Diary", "Saved on this device only.", ""];
-    lines.push("Mrs Hayes’s questions");
-    D.notes.forEach(function (n) {
-      lines.push("");
-      lines.push(n.date);
-      lines.push(n.text);
-      lines.push(state.answers[n.id] ? state.answers[n.id] : "(not yet answered)");
-    });
-    lines.push("");
-    lines.push("Evidence I’ve marked");
-    const items = Object.keys(state.evidence);
-    if (!items.length) lines.push("(no lines marked yet)");
-    items.forEach(function (pid) {
-      const found = paraById(pid);
-      if (!found) return;
-      lines.push("");
-      lines.push(found.entry.date);
-      lines.push(plainRuns(found.para.runs));
-      lines.push(TAGS[state.evidence[pid]] || state.evidence[pid]);
-    });
-    return lines.join("\n");
-  }
-  function copyNotebook() {
-    const text = notebookText();
-    const done = function () {
-      $("copy-notebook").textContent = "Copied";
-      window.setTimeout(function () { $("copy-notebook").textContent = "Copy"; }, 1600);
-    };
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(done).catch(fallbackCopy);
-    } else fallbackCopy();
-    function fallbackCopy() {
-      const ta = document.createElement("textarea");
-      ta.value = text;
-      document.body.appendChild(ta);
-      ta.select();
-      try { document.execCommand("copy"); } catch (err) {}
-      ta.remove();
-      done();
-    }
-  }
-  function printNotebook() {
-    document.body.classList.add("printing-notes");
-    $("notebook").hidden = false;
-    window.print();
-    window.setTimeout(function () {
-      document.body.classList.remove("printing-notes");
-      if (!notebookOpen()) $("notebook").hidden = true;
-    }, 300);
-  }
-  function clearNotebook() {
-    if (!window.confirm("Clear the answers and evidence marks saved on this device?")) return;
-    state.answers = {};
-    state.evidence = {};
-    save();
-    renderSpread();
-    renderNotebook();
-    updateChrome();
-  }
-
   /* Lightbox, same pattern as Who Fired First? */
   function openLightbox() {
     const box = $("chapel-lightbox");
@@ -515,7 +384,6 @@
     const inField = ev.target && (ev.target.tagName === "TEXTAREA" || ev.target.tagName === "INPUT" || ev.target.tagName === "SELECT");
     if (ev.key === "Escape") {
       if (!$("chapel-lightbox").hidden) { closeLightbox(); ev.preventDefault(); return; }
-      if (notebookOpen() && !document.querySelector("dialog[open]")) { setNotebook(false); ev.preventDefault(); return; }
     }
     if (inField || document.querySelector("dialog[open]") || !$("chapel-lightbox").hidden) return;
     if (ev.key === "ArrowRight" || ev.key === "PageDown") { ev.preventDefault(); go(1); }
@@ -532,17 +400,9 @@
       save();
       applyEasy();
     });
-    $("open-notebook").addEventListener("click", function () { setNotebook(true); });
-    $("close-notebook").addEventListener("click", function () { setNotebook(false); });
-    $("print-notebook").addEventListener("click", printNotebook);
-    $("copy-notebook").addEventListener("click", copyNotebook);
-    $("clear-notebook").addEventListener("click", clearNotebook);
     $("hayes-save").addEventListener("click", saveNote);
     $("hayes-close").addEventListener("click", closeNote);
     $("spell-close").addEventListener("click", function () { $("spell-dialog").close(); });
-    $("ev-save").addEventListener("click", saveEvidence);
-    $("ev-remove").addEventListener("click", removeEvidence);
-    $("ev-close").addEventListener("click", function () { $("evidence-dialog").close(); evPid = null; });
     $("chapel-lightbox").querySelector(".lightbox-close").addEventListener("click", closeLightbox);
     $("chapel-lightbox").addEventListener("click", function (ev) {
       if (ev.target.id === "chapel-lightbox") closeLightbox();
@@ -556,9 +416,6 @@
     stage.addEventListener("pointerdown", onPointerDown);
     stage.addEventListener("pointerup", onPointerUp);
     stage.addEventListener("pointercancel", function () { swipeX = swipeY = null; });
-    document.addEventListener("click", function (ev) {
-      if (notebookOpen() && ev.target === document.body) setNotebook(false);
-    });
     window.addEventListener("resize", function () {
       const snapped = spreadStart(state.page);
       if (snapped !== state.page) {
@@ -580,10 +437,6 @@
       const nid = q.get("note") || "e0n3";
       state.page = pageIndexForNote(nid);
       window.setTimeout(function () { openNote(nid); }, 80);
-    }
-    if (shot === "notebook" || q.get("notebook") === "1") {
-      state.page = state.page || pageIndexForNote("e0n3");
-      window.setTimeout(function () { setNotebook(true); }, 80);
     }
     if (shot === "mobile") {
       if (!q.get("page")) state.page = 2;

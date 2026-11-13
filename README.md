@@ -28,7 +28,7 @@ The school line, place headings (St Alipius School, Ballarat / Our tent, Eureka)
 - A page-turning exercise book, with swipe, arrow buttons, and keyboard (Left, Right, Home, End). Lined paper; an ink smudge where the last entry breaks off.
 - Tappable red “AH” marks open Mrs Hayes’s questions. Answers are saved in `localStorage` on this device only.
 - Tapping a spelling correction shows Nell’s original word and Mrs Hayes’s fix.
-- A Detective’s notebook collects answers and lines marked as evidence: Seen it myself / Heard it / Not sure. The notebook can be printed or copied.
+- The last page has a My finding box: Who fired first? Rebels, Soldiers, or We can’t know, and a reason. A link opens the Who Fired First? case. Answers stay on this device.
 - The last page ends at the first shot, then offers “Who fired first? Open the case.” which opens the case file at https://robmac10.github.io/who-fired-first/#brief
 - A collapsed “For teachers: what’s true?” panel sits under the book, not on the diary pages.
 - Cedarville Cursive is the default hand; Kalam is the easy-read toggle.

@@ -480,3 +480,28 @@ footer p{margin:.2em 0}
   body.printing-notes .nb-actions,.notebook-panel #close-notebook{display:none!important}
   .nb-card{break-inside:avoid}
 }
+
+/* My finding, on the last diary page — clear print, not Nell’s hand */
+.finding-box,.finding-box p,.finding-box label,.finding-box h3,.finding-box legend,.finding-box textarea{
+  font-family:Georgia,"Times New Roman",serif;
+}
+body.easy-read .finding-box,body.easy-read .finding-box p,body.easy-read .finding-box label,
+body.easy-read .finding-box h3,body.easy-read .finding-box legend,body.easy-read .finding-box textarea{
+  font-family:"Kalam",cursive;
+}
+.finding-box{margin-top:.6rem;padding:.7rem .8rem .85rem;border:2px solid #c9a96a;background:#fffaf2;border-radius:8px}
+.finding-box .endline{margin:0 0 .7em}
+.finding-box h3{margin:.15em 0 .25em;font-weight:700;font-size:1.15rem;line-height:1.2;color:#4a2e1b}
+.finding-box p{margin:.2em 0 .4em}
+.finding-box .find-choice{border:0;padding:0;margin:.2em 0 .5em;display:grid;gap:.35em}
+.finding-box .choice{
+  display:flex;align-items:center;gap:.45em;cursor:pointer;
+  border:2px solid #d6c5ae;border-radius:10px;padding:.4em .6em;background:#fff;font-weight:700;
+}
+.finding-box .choice:has(input:checked){border-color:#8b3a1e;background:#f7efe3}
+.finding-box .field{display:block;font-weight:700;margin:.35em 0 .2em}
+.finding-box textarea{
+  width:100%;min-height:5.5em;box-sizing:border-box;border:1px solid #d6c5ae;
+  background:#fff;padding:.4em .5em;font:1rem/1.4 Georgia,serif;resize:vertical;
+}
+.finding-box .cta{display:inline-block;margin-top:.55em}

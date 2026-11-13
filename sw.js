@@ -1,5 +1,5 @@
 /* Cache-first service worker so the diary can be used offline after one visit. No tracking. */
-const CACHE = "nells-diary-v2";
+const CACHE = "nells-diary-v3";
 
 function assetUrl(path) {
   return new URL(path, self.registration.scope).href;

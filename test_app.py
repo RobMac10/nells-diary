@@ -104,13 +104,12 @@ def test_html_features():
         ok("no personal name in student-facing app files")
     for needle, label in [
         ("For teachers: what’s true?", "teacher panel"),
-        ("Detective’s notebook", "notebook"),
+        ("My finding", "finding box"),
         ("easy-read", "easy-read toggle"),
         ("chapel-lightbox", "lightbox"),
         ("localStorage", "localStorage answers"),
-        ("Seen it myself", "evidence tag"),
-        ("Heard it", "evidence tag heard"),
-        ("Not sure", "evidence tag unsure"),
+        ("who-first", "finding choices"),
+        ("finding-reason", "finding reason"),
         ("who-fired-first/#brief", "case file link"),
         ("Cedarville Cursive", "Nell's font"),
         ("Italianno", "Hayes font"),
