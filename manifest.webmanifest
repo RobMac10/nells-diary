@@ -1,0 +1,11 @@
+{
+  "name": "Nell’s Diary",
+  "short_name": "Nell’s Diary",
+  "description": "An interactive exercise book of Nell’s Diary, Exhibit N from Reopen the Record: Australian Histories.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#fbf3e6",
+  "theme_color": "#8b3a1e",
+  "lang": "en-AU",
+  "dir": "ltr"
+}

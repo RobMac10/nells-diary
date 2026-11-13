@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nell’s Diary · Reopen the Record: Australian Histories</title>
+<meta name="description" content="Nell’s Diary: an interactive exercise book from the Eureka Stockade, Ballarat, 1854. Exhibit N from Reopen the Record: Australian Histories.">
+<meta name="theme-color" content="#8b3a1e">
+<meta name="robots" content="noindex,nofollow">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="skip" href="#book">Skip to the diary</a>
+
+<header class="wrap top">
+  <div class="mast">
+    <p class="eyebrow">History Case File · Exhibit N</p>
+    <h1>Nell’s Diary</h1>
+    <p class="mast-sub">Gunfire at Dawn · The Eureka Stockade, Ballarat, 1854</p>
+  </div>
+  <div class="tools" role="toolbar" aria-label="Diary tools">
+    <label class="easy-toggle" for="easy-read">
+      <span class="easy-label">Easy-read</span>
+      <input type="checkbox" id="easy-read" role="switch" aria-checked="false">
+      <span class="switch" aria-hidden="true"></span>
+      <span class="easy-state">Off</span>
+    </label>
+    <button type="button" class="btn" id="open-notebook" aria-controls="notebook" aria-expanded="false">
+      Detective’s notebook <span class="badge" id="nb-count" hidden>0</span>
+    </button>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+  <p class="hint" id="book-hint">Turn the pages with the arrows, the keys, or a swipe. Tap a red mark to read Mrs Hayes’s question. Tap a line to mark it as evidence.</p>
+
+  <section class="book-frame" id="book" aria-label="Nell’s exercise book">
+    <button type="button" class="page-btn prev" id="prev" aria-label="Previous page">‹</button>
+    <div class="book-stage" id="stage" tabindex="0">
+      <div class="spread" id="spread" aria-live="polite"></div>
+    </div>
+    <button type="button" class="page-btn next" id="next" aria-label="Next page">›</button>
+  </section>
+  <p class="page-status" id="status">Page 1</p>
+
+  <details class="teacher-true" id="teacher">
+    <summary>For teachers: what’s true?</summary>
+    <div class="teacher-true-body" id="teacher-body"></div>
+  </details>
+</main>
+
+<aside id="notebook" class="notebook-panel" hidden role="dialog" aria-labelledby="nb-title">
+  <div class="notebook-inner">
+    <header class="nb-head">
+      <h2 id="nb-title">Detective’s notebook</h2>
+      <button type="button" class="btn quiet" id="close-notebook">Close</button>
+    </header>
+    <p class="note">Your answers and the lines you mark are saved on this device only. Nothing is sent away.</p>
+    <div class="nb-actions">
+      <button type="button" class="btn" id="print-notebook">Print</button>
+      <button type="button" class="btn alt" id="copy-notebook">Copy</button>
+      <button type="button" class="btn quiet" id="clear-notebook">Clear my notes</button>
+    </div>
+    <div class="nb-scroll">
+    <section>
+      <h3>Mrs Hayes’s questions</h3>
+      <div id="nb-answers"></div>
+    </section>
+    <section>
+      <h3>Evidence I’ve marked</h3>
+      <div id="nb-evidence"></div>
+    </section>
+    </div>
+  </div>
+</aside>
+
+<dialog id="hayes-dialog" class="pop" aria-labelledby="hayes-title">
+  <h2 id="hayes-title" class="teacher-hand"></h2>
+  <p class="note">Mrs Hayes wrote this in the margin. Write what you think.</p>
+  <label class="field" for="hayes-answer">Your answer</label>
+  <textarea id="hayes-answer" rows="5" maxlength="2000"></textarea>
+  <div class="pop-actions">
+    <button type="button" class="btn" id="hayes-save">Save</button>
+    <button type="button" class="btn quiet" id="hayes-close" value="cancel">Close</button>
+  </div>
+</dialog>
+
+<dialog id="spell-dialog" class="pop" aria-labelledby="spell-title">
+  <h2 id="spell-title">A spelling correction</h2>
+  <p>Nell wrote <q id="spell-wrong"></q>.</p>
+  <p>Mrs Hayes wrote <q id="spell-right" class="fix"></q>.</p>
+  <div class="pop-actions">
+    <button type="button" class="btn" id="spell-close">Close</button>
+  </div>
+</dialog>
+
+<dialog id="evidence-dialog" class="pop" aria-labelledby="ev-title">
+  <h2 id="ev-title">Mark this line as evidence</h2>
+  <blockquote class="ev-quote" id="ev-quote"></blockquote>
+  <fieldset class="ev-tags">
+    <legend>How should this be marked?</legend>
+    <label><input type="radio" name="ev-tag" value="seen"> Seen it myself</label>
+    <label><input type="radio" name="ev-tag" value="heard"> Heard it</label>
+    <label><input type="radio" name="ev-tag" value="unsure"> Not sure</label>
+  </fieldset>
+  <div class="pop-actions">
+    <button type="button" class="btn" id="ev-save">Save</button>
+    <button type="button" class="btn quiet" id="ev-remove">Remove mark</button>
+    <button type="button" class="btn quiet" id="ev-close">Close</button>
+  </div>
+</dialog>
+
+<div id="chapel-lightbox" class="lightbox" hidden role="dialog" aria-modal="true" aria-labelledby="chapel-lightbox-title">
+  <p id="chapel-lightbox-title" class="visually-hidden"></p>
+  <button type="button" class="lightbox-close" aria-label="Close the magnified sketch">&times;</button>
+  <div class="lightbox-stage">
+    <img src="assets/chapel-school-large.jpg" width="2400" height="1206" alt="">
+  </div>
+</div>
+
+<footer class="wrap">
+  <p>Reopen the Record: Australian Histories</p>
+  <p class="note">A Year 5 exhibit from History Case File: Who Fired First? The case file itself is at <a href="https://robmac10.github.io/who-fired-first/#brief">Who Fired First?</a></p>
+</footer>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
